@@ -1,5 +1,7 @@
 # HivisionIDPhotos-ComfyUI
-a custom node for [HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhotos),you can find [workflow](./doc/证件照_workflow.json)
+a custom node for [HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhotos), you can find [workflow](./doc/证件照_workflow.json)
+
+![comfyui demo](doc/demo_2.png)
 
 ## Example
 | 输入 | 抠图 | 换背景 | 排版 |
@@ -16,4 +18,3 @@ a custom node for [HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhoto
 - `hivision_modnet.onnx` (24.7MB): 对纯色换底适配性更好的抠图模型，[下载](https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/hivision_modnet.onnx)
 - `mnn_hivision_modnet.mnn` (24.7MB): mnn转换后的抠图模型 by [zjkhahah](https://github.com/zjkhahah)，[下载](https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/mnn_hivision_modnet.mnn)
 - `rmbg-1.4.onnx` (176.2MB): [BRIA AI](https://huggingface.co/briaai/RMBG-1.4) 开源的抠图模型，[下载](https://huggingface.co/briaai/RMBG-1.4/resolve/main/model.pth?download=true)后重命名为`rmbg-1.4.onnx`
-
