@@ -14,11 +14,17 @@ from hivision.creator.layout_calculator import (
     generate_layout_photo,
     generate_layout_image,
 )
-from hivision.creator.human_matting import (
-    extract_human_modnet_photographic_portrait_matting,
-    extract_human,
-    extract_human_mnn_modnet,
-)
+from hivision.demo.utils import csv_to_size_list
+from hivision.creator.choose_handler import choose_handler
+
+size_list_dict_CN = csv_to_size_list(os.path.join(now_dir, "hivision/demo/size_list_CN.csv"))
+size_list_CN = list(size_list_dict_CN.keys())
+color_list_dict_CN = {
+    "蓝色": (86, 140, 212),
+    "白色": (255, 255, 255),
+    "红色": (233, 51, 35),
+}
+color_list = list(color_list_dict_CN.keys())
 
 class HivisionNode:
     @classmethod
@@ -32,22 +38,18 @@ class HivisionNode:
                     "add_background",
                     "generate_layout_photos",
                 ],),
-                "height":("INT",{
-                    "default": 413
+                "kb":("INT",{
+                    "default": 300
                 }),
-                "width":("INT",{
-                    "default": 295
-                }),
-                "bgcolor":("STRING",{
-                    "default": "638cce"
-                }),
-                "matting_model":(["hivision_modnet", "modnet_photographic_portrait_matting", "mnn_hivision_modnet"],),
+                "size":(size_list_CN,),
+                "bgcolor":(color_list,),
+                "matting_model":(["hivision_modnet", "modnet_photographic_portrait_matting", "mnn_hivision_modnet","rmbg-1.4"],),
                 "render":(["pure_color", "updown_gradient", "center_gradient"],)
             }
         }
     
     RETURN_TYPES = ("IMAGE","IMAGE",)
-    RETURN_NAMES = ("3ch_img","4ch_img",)
+    RETURN_NAMES = ("3ch_standard_img","4ch_hd_img",)
 
     FUNCTION = "gen_img"
 
@@ -55,7 +57,7 @@ class HivisionNode:
 
     CATEGORY = "AIFSH_HivisionIDPhotos"
 
-    def gen_img(self,input_img,type,height,width,bgcolor,
+    def gen_img(self,input_img,type,kb,size,bgcolor,
                 matting_model,render):
         
         print(type)
@@ -63,16 +65,13 @@ class HivisionNode:
         creator = IDCreator()
 
         # ------------------- 人像抠图模型选择 -------------------
-        if matting_model == "hivision_modnet":
-            creator.matting_handler = extract_human
-        elif matting_model == "modnet_photographic_portrait_matting":
-            creator.matting_handler = extract_human_modnet_photographic_portrait_matting
-        elif matting_model == "mnn_hivision_modnet":
-            creator.matting_handler = extract_human_mnn_modnet
+        choose_handler(creator,matting_model_option=matting_model,
+                       face_detect_option="mtcnn")
 
         img_np = input_img.numpy()[0] * 255
         img_np = img_np.astype(np.uint8)
         input_image = cv2.cvtColor(img_np,cv2.COLOR_BGR2RGB)
+        height, width = size_list_dict_CN[size]
 
         # 如果模式是生成证件照
         if type == "idphoto":
@@ -95,17 +94,20 @@ class HivisionNode:
         # 如果模式是人像抠图
         elif type == "human_matting":
             result = creator(input_image, change_bg_only=True)
+            standard_cv2 = cv2.cvtColor(result.standard,cv2.COLOR_BGR2RGB)
+            standard_img = torchvision.transforms.ToTensor()(standard_cv2).permute(1,2,0).unsqueeze(0)
             hd_cv2 = cv2.cvtColor(result.hd,cv2.COLOR_BGR2RGBA)
             hd_img = torchvision.transforms.ToTensor()(hd_cv2).permute(1,2,0).unsqueeze(0)
             # print(hd_img.shape)
-            return (hd_img, hd_img,)
+            return (standard_img, hd_img,)
 
 
         # 如果模式是添加背景
         elif type == "add_background":
             # 将字符串转为元组
             input_image = cv2.cvtColor(img_np,cv2.COLOR_BGR2RGBA)
-            color = hex_to_rgb(bgcolor)
+            color = color_list_dict_CN[bgcolor]
+            
             # 将元祖的 0 和 2 号数字交换
             color = (color[2], color[1], color[0])
 
@@ -113,10 +115,21 @@ class HivisionNode:
                 input_image, bgr=color, mode=render
             )
             result_image = result_image.astype(np.uint8)
+
+            result_image = cv2.cvtColor(result_image, cv2.COLOR_RGB2BGR)
+            tmp_img_path = "tmp.png"
+            resize_image_to_kb(
+                result_image, tmp_img_path, kb
+            )
+
+            result_image = cv2.imread(tmp_img_path)
+
+            standard_cv2 = cv2.cvtColor(result_image,cv2.COLOR_BGR2RGB)
+            standard_img = torchvision.transforms.ToTensor()(standard_cv2).permute(1,2,0).unsqueeze(0)
             hd_cv2 = cv2.cvtColor(result_image,cv2.COLOR_BGR2RGBA)
-            result_image = torchvision.transforms.ToTensor()(hd_cv2).permute(1,2,0).unsqueeze(0)
+            hd_img = torchvision.transforms.ToTensor()(hd_cv2).permute(1,2,0).unsqueeze(0)
             #print(result_image.shape)
-            return (result_image, result_image,)
+            return (standard_img, hd_img,)
             
 
         # 如果模式是生成排版照
@@ -135,9 +148,20 @@ class HivisionNode:
                 height=size[0],
                 width=size[1],
             )
-            result_layout_image = cv2.cvtColor(result_layout_image,cv2.COLOR_BGR2RGB)
-            result_image = torchvision.transforms.ToTensor()(result_layout_image).permute(1,2,0).unsqueeze(0)
-            return (result_image, result_image,)
+            result_layout_image = cv2.cvtColor(result_layout_image, cv2.COLOR_RGB2BGR)
+
+            tmp_img_path = "tmp.png"
+            resize_image_to_kb(
+                result_layout_image, tmp_img_path, kb
+            )
+
+            result_layout_image = cv2.imread(tmp_img_path)
+
+            standard_cv2 = cv2.cvtColor(result_layout_image,cv2.COLOR_BGR2RGB)
+            standard_img = torchvision.transforms.ToTensor()(standard_cv2).permute(1,2,0).unsqueeze(0)
+            hd_cv2 = cv2.cvtColor(result_layout_image,cv2.COLOR_BGR2RGBA)
+            hd_img = torchvision.transforms.ToTensor()(hd_cv2).permute(1,2,0).unsqueeze(0)
+            return (standard_img, hd_img,)
 
 NODE_CLASS_MAPPINGS = {
     "HivisionNode": HivisionNode
