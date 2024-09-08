@@ -10,7 +10,7 @@ a custom node for [HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhoto
 
 ## 教程
 - [Demo](https://www.bilibili.com/video/BV1iFpvegEY3/)
-- [一键包](https://b23.tv/QFgmoXM)
+- [一键包](https://pan.quark.cn/s/6c11fb1a9b04)
   
 ## weights
 存到项目的`ComfyUI/custom_nodes/HivisionIDPhotos-ComfyUI/hivision/creator/weights`目录下：
