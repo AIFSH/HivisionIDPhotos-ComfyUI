@@ -6,6 +6,10 @@ a custom node for [HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhoto
 | -- | -- | -- | -- |
 | ![](./doc/demo.jpg) [source](https://www.liblib.art/imageinfo/b7cb6b18b2af4c37be8607b648b52979) | ![](./doc/ComfyUI_temp_movvp_00002_.png) ![](./doc/ComfyUI_temp_igzmq_00002_.png) | ![](./doc/ComfyUI_temp_byppo_00004_.png) | ![](./doc/ComfyUI_temp_jeppc_00005_.png) |
 
+## 教程
+- [Demo](https://www.bilibili.com/video/BV1iFpvegEY3/)
+- [一键包](https://b23.tv/QFgmoXM)
+  
 ## weights
 存到项目的`ComfyUI/custom_nodes/HivisionIDPhotos-ComfyUI/hivision/creator/weights`目录下：
 - `modnet_photographic_portrait_matting.onnx` (24.7MB): [MODNet](https://github.com/ZHKKKe/MODNet)官方权重，[下载](https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/modnet_photographic_portrait_matting.onnx)
