@@ -1,3 +1,5 @@
 __pycache__
 hivision/creator/weights/*
 !hivision/creator/weights/.gitkeep
+hivision/creator/retinaface/weights/*
+!hivision/creator/retinaface/weights/.gitkeep
