@@ -1,0 +1,15 @@
+[project]
+name = "hivisionidphotos-comfyui"
+description = "a custom node for [a/HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhotos)"
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = ["opencv-python>=4.8.1.78", "onnxruntime>=1.15.0", "numpy<=1.26.4", "requests", "mtcnn-runtime", "mnn"]
+
+[project.urls]
+Repository = "https://github.com/AIFSH/HivisionIDPhotos-ComfyUI"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "HivisionIDPhotos-ComfyUI"
+Icon = ""
