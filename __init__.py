@@ -360,8 +360,8 @@ class HivisionNode:
         except FaceError:
             print("人脸数量不等于 1，请上传单张人脸的图像。")
         else:
-            standard_cv2 = cv2.cvtColor(result.standard,cv2.COLOR_BGR2RGB)
-            hd_cv2 = cv2.cvtColor(result.hd,cv2.COLOR_BGR2RGBA)
+            standard_cv2 = cv2.cvtColor(result.standard,cv2.COLOR_BGRA2RGBA)
+            hd_cv2 = cv2.cvtColor(result.hd,cv2.COLOR_BGRA2RGBA)
             standard_img = torchvision.transforms.ToTensor()(standard_cv2)
             standard_img = standard_img.permute(1,2,0).unsqueeze(0)
             hd_img = torchvision.transforms.ToTensor()(hd_cv2).permute(1,2,0).unsqueeze(0)
