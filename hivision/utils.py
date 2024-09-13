@@ -12,6 +12,7 @@ import io
 import numpy as np
 import cv2
 import base64
+from hivision.plugin.watermark import Watermarker, WatermarkerStyles
 
 
 def resize_image_to_kb(input_image, output_image_path, target_size_kb):
@@ -72,12 +73,6 @@ def resize_image_to_kb(input_image, output_image_path, target_size_kb):
         # Ensure quality does not go below 1
         if quality < 1:
             quality = 1
-
-
-import numpy as np
-from PIL import Image
-import io
-import base64
 
 
 def resize_image_to_kb_base64(input_image, target_size_kb, mode="exact"):
@@ -153,11 +148,18 @@ def resize_image_to_kb_base64(input_image, target_size_kb, mode="exact"):
     return img_base64
 
 
-def numpy_2_base64(img: np.ndarray):
+def numpy_2_base64(img: np.ndarray) -> str:
     _, buffer = cv2.imencode(".png", img)
     base64_image = base64.b64encode(buffer).decode("utf-8")
 
     return base64_image
+
+
+def base64_2_numpy(base64_image: str) -> np.ndarray:
+    img = base64.b64decode(base64_image)
+    img = np.frombuffer(img, np.uint8)
+
+    return img
 
 
 def save_numpy_image(numpy_img, file_path):
@@ -273,3 +275,20 @@ def add_background(input_image, bgr=(0, 0, 0), mode="pure_color"):
     )
 
     return output
+
+
+def add_watermark(
+    image, text, size=50, opacity=0.5, angle=45, color="#8B8B1B", space=75
+):
+    image = Image.fromarray(image)
+    watermarker = Watermarker(
+        input_image=image,
+        text=text,
+        style=WatermarkerStyles.STRIPED,
+        angle=angle,
+        color=color,
+        opacity=opacity,
+        size=size,
+        space=space,
+    )
+    return np.array(watermarker.image.convert("RGB"))

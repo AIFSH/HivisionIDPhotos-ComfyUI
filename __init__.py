@@ -17,7 +17,7 @@ from hivision.creator.layout_calculator import (
 )
 from hivision.demo.utils import csv_to_size_list,csv_to_color_list
 from hivision.creator.choose_handler import choose_handler, HUMAN_MATTING_MODELS
-from hivision.demo.utils import add_watermark 
+from hivision.utils import add_watermark
 
 size_list_dict_CN = csv_to_size_list(os.path.join(now_dir, "hivision/demo/assets/size_list_CN.csv"))
 size_list_CN = list(size_list_dict_CN.keys())
@@ -326,7 +326,14 @@ class HivisionNode:
                     "step":0.01,
                     "round": 0.001,
                     "display":"slider"
-                })
+                }),
+                "whitening_strength":("INT",{
+                    "default": 2,
+                    "min":0,
+                    "max":15,
+                    "step":1,
+                    "display":"slider"
+                }),
             }
         }
     
@@ -340,7 +347,7 @@ class HivisionNode:
     CATEGORY = "AIFSH_HivisionIDPhotos"
         
     def gen_img(self,input_img,normal_params,change_bg_only,matting_model,
-                face_detect_model,head_measure_ratio,top_distance):
+                face_detect_model,head_measure_ratio,top_distance,whitening_strength):
         creator = IDCreator()
 
         # ------------------- 人像抠图模型选择 -------------------
@@ -356,7 +363,8 @@ class HivisionNode:
             result = creator(input_image, size=size,
                                 head_measure_ratio=head_measure_ratio,
                                 head_top_range=(top_distance, top_distance-0.02),
-                                change_bg_only=change_bg_only)
+                                change_bg_only=change_bg_only,
+                                whitening_strength=whitening_strength)
         except FaceError:
             print("人脸数量不等于 1，请上传单张人脸的图像。")
         else:

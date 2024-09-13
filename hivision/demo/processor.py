@@ -1,13 +1,13 @@
 import numpy as np
 from hivision import IDCreator
 from hivision.error import FaceError, APIError
-from hivision.utils import add_background, resize_image_to_kb
+from hivision.utils import add_background, resize_image_to_kb, add_watermark
 from hivision.creator.layout_calculator import (
     generate_layout_photo,
     generate_layout_image,
 )
 from hivision.creator.choose_handler import choose_handler
-from demo.utils import add_watermark, range_check
+from demo.utils import range_check
 import gradio as gr
 import os
 import time
@@ -41,7 +41,7 @@ class IDPhotoProcessor:
         face_detect_option,
         head_measure_ratio=0.2,
         top_distance_max=0.12,
-        top_distance_min=0.10,
+        whitening_strength=0,
     ):
         top_distance_min = top_distance_max - 0.02
 
@@ -70,6 +70,8 @@ class IDPhotoProcessor:
                 return [
                     gr.update(value=None),  # img_output_standard
                     gr.update(value=None),  # img_output_standard_hd
+                    gr.update(value=None),  # img_output_standard_png
+                    gr.update(value=None),  # img_output_standard_hd_png
                     None,  # img_output_layout (assuming it should be None or not updated)
                     gr.update(  # notification
                         value=LOCALES["size_mode"][language]["custom_size_eror"],
@@ -113,6 +115,7 @@ class IDPhotoProcessor:
             idphoto_json["size_mode"] in LOCALES["size_mode"][language]["choices"][1]
         )
 
+        # 生成证件照
         try:
             result = creator(
                 input_image,
@@ -120,11 +123,15 @@ class IDPhotoProcessor:
                 size=idphoto_json["size"],
                 head_measure_ratio=head_measure_ratio,
                 head_top_range=(top_distance_max, top_distance_min),
+                whitening_strength=whitening_strength,
             )
+        # 如果检测到人脸数量不等于1
         except FaceError:
             return [
                 gr.update(value=None),  # img_output_standard
                 gr.update(value=None),  # img_output_standard_hd
+                gr.update(value=None),  # img_output_standard_png
+                gr.update(value=None),  # img_output_standard_hd_png
                 gr.update(visible=False),  # img_output_layout
                 gr.update(  # notification
                     value=LOCALES["notification"][language]["face_error"],
@@ -132,11 +139,13 @@ class IDPhotoProcessor:
                 ),
                 None,  # file_download (assuming it should be None or have no update)
             ]
-
+        # 如果 API 错误
         except APIError as e:
             return [
                 gr.update(value=None),  # img_output_standard
                 gr.update(value=None),  # img_output_standard_hd
+                gr.update(value=None),  # img_output_standard_png
+                gr.update(value=None),  # img_output_standard_hd_png
                 gr.update(visible=False),  # img_output_layout
                 gr.update(  # notification
                     value=LOCALES["notification"][language]["face_error"],
@@ -144,9 +153,14 @@ class IDPhotoProcessor:
                 ),
                 None,  # file_download (assuming it should be None or have no update)
             ]
-
+        # 证件照生成正常
         else:
-            (result_image_standard, result_image_hd, _, _) = result
+            (result_image_standard, result_image_hd, _, _, _, _) = result
+
+            result_image_standard_png = np.uint8(result_image_standard)
+            result_image_hd_png = np.uint8(result_image_hd)
+
+            # 纯色渲染
             if (
                 idphoto_json["render_mode"]
                 == LOCALES["render_mode"][language]["choices"][0]
@@ -157,6 +171,7 @@ class IDPhotoProcessor:
                 result_image_hd = np.uint8(
                     add_background(result_image_hd, bgr=idphoto_json["color_bgr"])
                 )
+            # 上下渐变渲染
             elif (
                 idphoto_json["render_mode"]
                 == LOCALES["render_mode"][language]["choices"][1]
@@ -175,6 +190,7 @@ class IDPhotoProcessor:
                         mode="updown_gradient",
                     )
                 )
+            # 中心渐变渲染
             else:
                 result_image_standard = np.uint8(
                     add_background(
@@ -272,6 +288,8 @@ class IDPhotoProcessor:
                 return [
                     result_image_standard,  # img_output_standard
                     result_image_hd,  # img_output_standard_hd
+                    result_image_standard_png,  # img_output_standard_png
+                    result_image_hd_png,  # img_output_standard_hd_png
                     result_layout_image,  # img_output_layout
                     gr.update(visible=False),  # notification
                     gr.update(visible=True, value=output_image_path),  # file_download
@@ -280,6 +298,8 @@ class IDPhotoProcessor:
                 return [
                     result_image_standard,  # img_output_standard
                     result_image_hd,  # img_output_standard_hd
+                    result_image_standard_png,  # img_output_standard_png
+                    result_image_hd_png,  # img_output_standard_hd_png
                     result_layout_image,  # img_output_layout
                     gr.update(visible=False),  # notification
                     gr.update(visible=False),  # file_download

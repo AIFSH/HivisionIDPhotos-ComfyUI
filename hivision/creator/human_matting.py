@@ -7,7 +7,6 @@ r"""
 @Description:
     人像抠图
 """
-import torch
 import numpy as np
 from PIL import Image
 import onnxruntime

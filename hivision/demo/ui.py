@@ -2,7 +2,12 @@ import gradio as gr
 import os
 import pathlib
 from demo.locals import LOCALES
-from hivision.creator.choose_handler import FACE_DETECT_MODELS
+from demo.processor import IDPhotoProcessor
+
+"""
+只裁切模式:
+1. 如果重新上传了照片，然后点击按钮，第一次会调用不裁切的模式，第二次会调用裁切的模式
+"""
 
 
 def load_description(fp):
@@ -12,39 +17,23 @@ def load_description(fp):
 
 
 def create_ui(
-    processor, root_dir, human_matting_models: list, face_detect_models: list
+    processor: IDPhotoProcessor,
+    root_dir: str,
+    human_matting_models: list,
+    face_detect_models: list,
 ):
     DEFAULT_LANG = "zh"
     DEFAULT_HUMAN_MATTING_MODEL = "modnet_photographic_portrait_matting"
-    DEFAULT_FACE_DETECT_MODEL = "mtcnn"
+    DEFAULT_FACE_DETECT_MODEL = "retinaface-resnet50"
 
     if DEFAULT_HUMAN_MATTING_MODEL in human_matting_models:
         human_matting_models.remove(DEFAULT_HUMAN_MATTING_MODEL)
         human_matting_models.insert(0, DEFAULT_HUMAN_MATTING_MODEL)
 
-    css = """
-        #col-left {
-            margin: 0 auto;
-            max-width: 430px;
-        }
-        #col-mid {
-            margin: 0 auto;
-            max-width: 430px;
-        }
-        #col-right {
-            margin: 0 auto;
-            max-width: 430px;
-        }
-        #col-showcase {
-            margin: 0 auto;
-            max-width: 1100px;
-        }
-        #button {
-            color: blue;
-        }
-        """
+    if DEFAULT_FACE_DETECT_MODEL not in face_detect_models:
+        DEFAULT_FACE_DETECT_MODEL = "mtcnn"
 
-    demo = gr.Blocks(title="HivisionIDPhotos", css=css)
+    demo = gr.Blocks(title="HivisionIDPhotos")
 
     with demo:
         gr.HTML(load_description(os.path.join(root_dir, "assets/title.md")))
@@ -74,6 +63,7 @@ def create_ui(
                         value=human_matting_models[0],
                     )
 
+                # TAB1 - 关键参数
                 with gr.Tab(
                     LOCALES["key_param"][DEFAULT_LANG]["label"]
                 ) as key_parameter_tab:
@@ -116,6 +106,7 @@ def create_ui(
                         value=LOCALES["render_mode"][DEFAULT_LANG]["choices"][0],
                     )
 
+                # TAB2 - 高级参数
                 with gr.Tab(
                     LOCALES["advance_param"][DEFAULT_LANG]["label"]
                 ) as advance_parameter_tab:
@@ -151,6 +142,20 @@ def create_ui(
                             interactive=True,
                         )
 
+                # TAB3 - 美颜
+                with gr.Tab(
+                    LOCALES["beauty_tab"][DEFAULT_LANG]["label"]
+                ) as beauty_parameter_tab:
+                    whitening_option = gr.Slider(
+                        label=LOCALES["whitening_strength"][DEFAULT_LANG]["label"],
+                        minimum=0,
+                        maximum=15,
+                        value=2,
+                        step=1,
+                        interactive=True,
+                    )
+
+                # TAB4 - 水印
                 with gr.Tab(
                     LOCALES["watermark_tab"][DEFAULT_LANG]["label"]
                 ) as watermark_parameter_tab:
@@ -237,7 +242,9 @@ def create_ui(
                         ],
                     )
 
-                img_but = gr.Button(LOCALES["button"][DEFAULT_LANG]["label"])
+                img_but = gr.Button(
+                    LOCALES["button"][DEFAULT_LANG]["label"], elem_id="btn"
+                )
 
                 example_images = gr.Examples(
                     inputs=[img_input],
@@ -267,14 +274,33 @@ def create_ui(
                         height=350,
                         format="jpeg",
                     )
+
                 img_output_layout = gr.Image(
                     label=LOCALES["layout_photo"][DEFAULT_LANG]["label"],
                     height=350,
                     format="jpeg",
                 )
+
                 file_download = gr.File(
                     label=LOCALES["download"][DEFAULT_LANG]["label"], visible=False
                 )
+
+                with gr.Accordion(
+                    LOCALES["matting_image"][DEFAULT_LANG]["label"], open=False
+                ) as matting_image_accordion:
+                    with gr.Row():
+                        img_output_standard_png = gr.Image(
+                            label=LOCALES["standard_photo_png"][DEFAULT_LANG]["label"],
+                            height=350,
+                            format="png",
+                            elem_id="standard_photo_png",
+                        )
+                        img_output_standard_hd_png = gr.Image(
+                            label=LOCALES["hd_photo_png"][DEFAULT_LANG]["label"],
+                            height=350,
+                            format="png",
+                            elem_id="hd_photo_png",
+                        )
 
             # ---------------- 设置隐藏/显示组件 ----------------
             def change_language(language):
@@ -323,6 +349,12 @@ def create_ui(
                     img_output_standard_hd: gr.update(
                         label=LOCALES["hd_photo"][language]["label"]
                     ),
+                    img_output_standard_png: gr.update(
+                        label=LOCALES["standard_photo_png"][language]["label"]
+                    ),
+                    img_output_standard_hd_png: gr.update(
+                        label=LOCALES["hd_photo_png"][language]["label"]
+                    ),
                     img_output_layout: gr.update(
                         label=LOCALES["layout_photo"][language]["label"]
                     ),
@@ -368,6 +400,15 @@ def create_ui(
                         choices=LOCALES["watermark_switch"][language]["choices"],
                         value=LOCALES["watermark_switch"][language]["choices"][0],
                     ),
+                    matting_image_accordion: gr.update(
+                        label=LOCALES["matting_image"][language]["label"]
+                    ),
+                    beauty_parameter_tab: gr.update(
+                        label=LOCALES["beauty_tab"][language]["label"]
+                    ),
+                    whitening_option: gr.update(
+                        label=LOCALES["whitening_strength"][language]["label"]
+                    ),
                 }
 
             def change_color(colors):
@@ -406,6 +447,7 @@ def create_ui(
                     return {custom_image_kb: gr.update(visible=False)}
 
             # ---------------- 绑定事件 ----------------
+            # 语言切换
             language_options.input(
                 change_language,
                 inputs=[language_options],
@@ -422,6 +464,8 @@ def create_ui(
                     notification,
                     img_output_standard,
                     img_output_standard_hd,
+                    img_output_standard_png,
+                    img_output_standard_hd_png,
                     img_output_layout,
                     file_download,
                     head_measure_ratio_option,
@@ -436,6 +480,9 @@ def create_ui(
                     watermark_text_angle,
                     watermark_text_space,
                     watermark_options,
+                    matting_image_accordion,
+                    beauty_parameter_tab,
+                    whitening_option,
                 ],
             )
 
@@ -480,10 +527,13 @@ def create_ui(
                     face_detect_model_options,
                     head_measure_ratio_option,
                     top_distance_option,
+                    whitening_option,
                 ],
                 outputs=[
                     img_output_standard,
                     img_output_standard_hd,
+                    img_output_standard_png,
+                    img_output_standard_hd_png,
                     img_output_layout,
                     notification,
                     file_download,

@@ -11,7 +11,10 @@ a custom node for [HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhoto
 ## 教程
 - [Demo](https://www.bilibili.com/video/BV1iFpvegEY3/)
 - [一键包](https://pan.quark.cn/s/b8422210f61a)
-  
+
+# 🤩 最近更新
+- 2024.9.13 增加**美白**功能
+
 ## weights
 存到项目的`ComfyUI/custom_nodes/HivisionIDPhotos-ComfyUI/hivision/creator/weights`目录下：
 - `modnet_photographic_portrait_matting.onnx` (24.7MB): [MODNet](https://github.com/ZHKKKe/MODNet)官方权重，[下载](https://github.com/Zeyi-Lin/HivisionIDPhotos/releases/download/pretrained-model/modnet_photographic_portrait_matting.onnx)
