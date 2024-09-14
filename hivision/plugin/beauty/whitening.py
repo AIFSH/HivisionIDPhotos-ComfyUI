@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import os
 
-
 class LutWhite:
     CUBE64_ROWS = 8
     CUBE64_SIZE = 64
@@ -73,20 +72,3 @@ def make_whitening_png(image, strength):
     output_image = cv2.merge((b_w, g_w, r_w, a))
 
     return cv2.cvtColor(output_image, cv2.COLOR_RGBA2BGRA)
-
-
-'''
-# 启动Gradio应用
-if __name__ == "__main__":
-    demo = gr.Interface(
-        fn=make_whitening,
-        inputs=[
-            gr.Image(type="pil", image_mode="RGBA", label="Input Image"),
-            gr.Slider(0, 30, step=1, label="Whitening Strength"),
-        ],
-        outputs=gr.Image(type="pil"),
-        title="Image Whitening Demo",
-        description="Upload an image and adjust the whitening strength to see the effect.",
-    )
-    demo.launch()
-'''

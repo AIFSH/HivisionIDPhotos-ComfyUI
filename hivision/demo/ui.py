@@ -21,8 +21,9 @@ def create_ui(
     root_dir: str,
     human_matting_models: list,
     face_detect_models: list,
+    language: list,
 ):
-    DEFAULT_LANG = "zh"
+    DEFAULT_LANG = language[0]
     DEFAULT_HUMAN_MATTING_MODEL = "modnet_photographic_portrait_matting"
     DEFAULT_FACE_DETECT_MODEL = "retinaface-resnet50"
 
@@ -44,7 +45,6 @@ def create_ui(
 
                 with gr.Row():
                     # 语言选择器
-                    language = ["zh", "en"]
                     language_options = gr.Dropdown(
                         choices=language,
                         label="Language",
@@ -133,14 +133,28 @@ def create_ui(
                         value=LOCALES["image_kb"][DEFAULT_LANG]["choices"][0],
                     )
 
-                    with gr.Row(visible=False) as custom_image_kb:
-                        custom_image_kb_size = gr.Slider(
-                            minimum=10,
-                            maximum=1000,
-                            value=50,
-                            label=LOCALES["image_kb_size"][DEFAULT_LANG]["label"],
-                            interactive=True,
-                        )
+                    custom_image_kb_size = gr.Slider(
+                        minimum=10,
+                        maximum=1000,
+                        value=50,
+                        label=LOCALES["image_kb_size"][DEFAULT_LANG]["label"],
+                        interactive=True,
+                        visible=False,
+                    )
+
+                    image_dpi_options = gr.Radio(
+                        choices=LOCALES["image_dpi"][DEFAULT_LANG]["choices"],
+                        label=LOCALES["image_dpi"][DEFAULT_LANG]["label"],
+                        value=LOCALES["image_dpi"][DEFAULT_LANG]["choices"][0],
+                    )
+                    custom_image_dpi_size = gr.Slider(
+                        minimum=72,
+                        maximum=600,
+                        value=300,
+                        label=LOCALES["image_dpi_size"][DEFAULT_LANG]["label"],
+                        interactive=True,
+                        visible=False,
+                    )
 
                 # TAB3 - 美颜
                 with gr.Tab(
@@ -409,27 +423,29 @@ def create_ui(
                     whitening_option: gr.update(
                         label=LOCALES["whitening_strength"][language]["label"]
                     ),
+                    image_dpi_options: gr.update(
+                        label=LOCALES["image_dpi"][language]["label"],
+                        choices=LOCALES["image_dpi"][language]["choices"],
+                        value=LOCALES["image_dpi"][language]["choices"][0],
+                    ),
+                    custom_image_dpi_size: gr.update(
+                        label=LOCALES["image_dpi"][language]["label"]
+                    ),
                 }
 
-            def change_color(colors):
-                if colors == "自定义底色" or colors == "Custom Color":
+            def change_color(colors, lang):
+                if colors == LOCALES["bg_color"][lang]["choices"][1]:
                     return {custom_color: gr.update(visible=True)}
                 else:
                     return {custom_color: gr.update(visible=False)}
 
-            def change_size_mode(size_option_item):
-                if (
-                    size_option_item == "自定义尺寸"
-                    or size_option_item == "Custom Size"
-                ):
+            def change_size_mode(size_option_item, lang):
+                if size_option_item == LOCALES["size_mode"][lang]["choices"][2]:
                     return {
                         custom_size: gr.update(visible=True),
                         size_list_row: gr.update(visible=False),
                     }
-                elif (
-                    size_option_item == "只换底"
-                    or size_option_item == "Only Change Background"
-                ):
+                elif size_option_item == LOCALES["size_mode"][lang]["choices"][1]:
                     return {
                         custom_size: gr.update(visible=False),
                         size_list_row: gr.update(visible=False),
@@ -440,11 +456,17 @@ def create_ui(
                         size_list_row: gr.update(visible=True),
                     }
 
-            def change_image_kb(image_kb_option):
-                if image_kb_option == "自定义" or image_kb_option == "Custom":
-                    return {custom_image_kb: gr.update(visible=True)}
+            def change_image_kb(image_kb_option, lang):
+                if image_kb_option == LOCALES["image_kb"][lang]["choices"][1]:
+                    return {custom_image_kb_size: gr.update(visible=True)}
                 else:
-                    return {custom_image_kb: gr.update(visible=False)}
+                    return {custom_image_kb_size: gr.update(visible=False)}
+
+            def change_image_dpi(image_dpi_option, lang):
+                if image_dpi_option == LOCALES["image_dpi"][lang]["choices"][1]:
+                    return {custom_image_dpi_size: gr.update(visible=True)}
+                else:
+                    return {custom_image_dpi_size: gr.update(visible=False)}
 
             # ---------------- 绑定事件 ----------------
             # 语言切换
@@ -483,21 +505,33 @@ def create_ui(
                     matting_image_accordion,
                     beauty_parameter_tab,
                     whitening_option,
+                    image_dpi_options,
+                    custom_image_dpi_size,
                 ],
             )
 
             color_options.input(
-                change_color, inputs=[color_options], outputs=[custom_color]
+                change_color,
+                inputs=[color_options, language_options],
+                outputs=[custom_color],
             )
 
             mode_options.input(
                 change_size_mode,
-                inputs=[mode_options],
+                inputs=[mode_options, language_options],
                 outputs=[custom_size, size_list_row],
             )
 
             image_kb_options.input(
-                change_image_kb, inputs=[image_kb_options], outputs=[custom_image_kb]
+                change_image_kb,
+                inputs=[image_kb_options, language_options],
+                outputs=[custom_image_kb_size],
+            )
+
+            image_dpi_options.input(
+                change_image_dpi,
+                inputs=[image_dpi_options, language_options],
+                outputs=[custom_image_dpi_size],
             )
 
             img_but.click(
@@ -528,6 +562,8 @@ def create_ui(
                     head_measure_ratio_option,
                     top_distance_option,
                     whitening_option,
+                    image_dpi_options,
+                    custom_image_dpi_size,
                 ],
                 outputs=[
                     img_output_standard,

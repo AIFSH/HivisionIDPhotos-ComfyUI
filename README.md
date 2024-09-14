@@ -13,7 +13,8 @@ a custom node for [HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhoto
 - [一键包](https://pan.quark.cn/s/b8422210f61a)
 
 # 🤩 最近更新
-- 2024.9.13 增加**美白**功能
+- 2024.09.14 增加**自定义DPI**功能
+- 2024.09.13 增加**美白**功能
 
 ## weights
 存到项目的`ComfyUI/custom_nodes/HivisionIDPhotos-ComfyUI/hivision/creator/weights`目录下：
