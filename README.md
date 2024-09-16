@@ -1,5 +1,5 @@
 # HivisionIDPhotos-ComfyUI
-a custom node for [HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhotos), you can find [证件照_workflow](./doc/证件照_workflow.json),or [id_photo_workflow](./doc/id_photo_workflow.json)
+a custom node for [HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhotos), you can find [证件照_workflow](./doc/证件照_workflow.json),or [id_photo_workflow](./doc/idphoto_workflow.json)
 
 ![comfyui demo](doc/web.png)
 
@@ -13,6 +13,7 @@ a custom node for [HivisionIDPhotos](https://github.com/Zeyi-Lin/HivisionIDPhoto
 - [一键包](https://pan.quark.cn/s/b8422210f61a)
 
 # 🤩 最近更新
+- 2024.09.16 增加**人脸旋转对齐/调整亮度、对比度、锐度**功能
 - 2024.09.14 增加**自定义DPI**功能
 - 2024.09.13 增加**美白**功能
 

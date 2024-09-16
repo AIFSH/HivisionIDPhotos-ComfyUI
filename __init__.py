@@ -338,6 +338,9 @@ class HivisionNode:
             "required":{
                 "input_img":("IMAGE",),
                 "normal_params":("PARAMS",),
+                "face_alignment":("BOOLEAN",{
+                    "default": True
+                }),
                 "change_bg_only":("BOOLEAN",{
                     "default": False
                 }),
@@ -369,6 +372,34 @@ class HivisionNode:
                     "step":1,
                     "display":"slider"
                 }),
+                 "brightness_strength":("INT",{
+                    "default": 0,
+                    "min":-5,
+                    "max":25,
+                    "step":1,
+                    "display":"slider"
+                }),
+                "contrast_strength":("INT",{
+                    "default": 0,
+                    "min":-10,
+                    "max":50,
+                    "step":1,
+                    "display":"slider"
+                }),
+                "saturation_strength":("INT",{
+                    "default": 0,
+                    "min":-10,
+                    "max":50,
+                    "step":1,
+                    "display":"slider"
+                }),
+                "sharpen_strength":("INT",{
+                    "default": 0,
+                    "min":0,
+                    "max":5,
+                    "step":1,
+                    "display":"slider"
+                }),
             }
         }
     
@@ -381,8 +412,9 @@ class HivisionNode:
 
     CATEGORY = "AIFSH_HivisionIDPhotos"
         
-    def gen_img(self,input_img,normal_params,change_bg_only,crop_only,matting_model,
-                face_detect_model,head_measure_ratio,top_distance,whitening_strength):
+    def gen_img(self,input_img,normal_params,face_alignment,change_bg_only,crop_only,matting_model,
+                face_detect_model,head_measure_ratio,top_distance,whitening_strength,
+                brightness_strength,contrast_strength,saturation_strength,sharpen_strength):
         creator = IDCreator()
 
         # ------------------- 人像抠图模型选择 -------------------
@@ -400,7 +432,12 @@ class HivisionNode:
                                 head_top_range=(top_distance, top_distance-0.02),
                                 change_bg_only=change_bg_only,
                                 crop_only=crop_only,
-                                whitening_strength=whitening_strength)
+                                face_alignment=face_alignment,
+                                whitening_strength=whitening_strength,
+                                brightness_strength=brightness_strength,
+                                contrast_strength = contrast_strength,
+                                sharpen_strength=sharpen_strength,
+                                saturation_strength=saturation_strength,)
         except FaceError:
             print("人脸数量不等于 1，请上传单张人脸的图像。")
         else:

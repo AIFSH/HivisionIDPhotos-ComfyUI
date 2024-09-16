@@ -1,6 +1,6 @@
 {
-  "last_node_id": 44,
-  "last_link_id": 69,
+  "last_node_id": 45,
+  "last_link_id": 74,
   "nodes": [
     {
       "id": 32,
@@ -20,7 +20,7 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 53
+          "link": 71
         }
       ],
       "outputs": [],
@@ -40,79 +40,19 @@
         "1": 246
       },
       "flags": {},
-      "order": 4,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 54
+          "link": 72
         }
       ],
       "outputs": [],
       "properties": {
         "Node name for S&R": "PreviewImage"
       }
-    },
-    {
-      "id": 39,
-      "type": "HivisionNode",
-      "pos": {
-        "0": 386,
-        "1": -11
-      },
-      "size": {
-        "0": 330,
-        "1": 222
-      },
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "input_img",
-          "type": "IMAGE",
-          "link": 51
-        },
-        {
-          "name": "normal_params",
-          "type": "PARAMS",
-          "link": 52
-        }
-      ],
-      "outputs": [
-        {
-          "name": "standard_img",
-          "type": "IMAGE",
-          "links": [
-            53
-          ],
-          "slot_index": 0,
-          "shape": 3
-        },
-        {
-          "name": "hd_img",
-          "type": "IMAGE",
-          "links": [
-            54,
-            55
-          ],
-          "slot_index": 1,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "HivisionNode"
-      },
-      "widgets_values": [
-        false,
-        false,
-        "modnet_photographic_portrait_matting",
-        "mtcnn",
-        0.2,
-        0.12,
-        2
-      ]
     },
     {
       "id": 42,
@@ -168,13 +108,13 @@
         "1": 46
       },
       "flags": {},
-      "order": 5,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
           "name": "input_img",
           "type": "IMAGE",
-          "link": 55
+          "link": 70
         },
         {
           "name": "normal_params",
@@ -218,7 +158,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            51
+            73
           ],
           "slot_index": 0,
           "shape": 3
@@ -367,8 +307,8 @@
           "links": [
             68
           ],
-          "shape": 3,
-          "slot_index": 0
+          "slot_index": 0,
+          "shape": 3
         }
       ],
       "properties": {
@@ -382,10 +322,10 @@
         "0": 799,
         "1": 610
       },
-      "size": [
-        814.6616307250974,
-        313.6051206359865
-      ],
+      "size": {
+        "0": 814.66162109375,
+        "1": 313.6051330566406
+      },
       "flags": {},
       "order": 11,
       "mode": 0,
@@ -421,10 +361,10 @@
           "name": "normal_params",
           "type": "PARAMS",
           "links": [
-            52,
             56,
             61,
-            67
+            67,
+            74
           ],
           "slot_index": 0,
           "shape": 3
@@ -440,49 +380,74 @@
         300,
         300
       ]
+    },
+    {
+      "id": 45,
+      "type": "HivisionNode",
+      "pos": {
+        "0": 394,
+        "1": -108
+      },
+      "size": {
+        "0": 330,
+        "1": 342
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input_img",
+          "type": "IMAGE",
+          "link": 73
+        },
+        {
+          "name": "normal_params",
+          "type": "PARAMS",
+          "link": 74
+        }
+      ],
+      "outputs": [
+        {
+          "name": "standard_img",
+          "type": "IMAGE",
+          "links": [
+            71
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "hd_img",
+          "type": "IMAGE",
+          "links": [
+            70,
+            72
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "HivisionNode"
+      },
+      "widgets_values": [
+        true,
+        false,
+        false,
+        "modnet_photographic_portrait_matting",
+        "mtcnn",
+        0.2,
+        0.12,
+        2,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   ],
   "links": [
-    [
-      51,
-      14,
-      0,
-      39,
-      0,
-      "IMAGE"
-    ],
-    [
-      52,
-      15,
-      0,
-      39,
-      1,
-      "PARAMS"
-    ],
-    [
-      53,
-      39,
-      0,
-      32,
-      0,
-      "IMAGE"
-    ],
-    [
-      54,
-      39,
-      1,
-      33,
-      0,
-      "IMAGE"
-    ],
-    [
-      55,
-      39,
-      1,
-      40,
-      0,
-      "IMAGE"
-    ],
     [
       56,
       15,
@@ -554,16 +519,56 @@
       36,
       0,
       "IMAGE"
+    ],
+    [
+      70,
+      45,
+      1,
+      40,
+      0,
+      "IMAGE"
+    ],
+    [
+      71,
+      45,
+      0,
+      32,
+      0,
+      "IMAGE"
+    ],
+    [
+      72,
+      45,
+      1,
+      33,
+      0,
+      "IMAGE"
+    ],
+    [
+      73,
+      14,
+      0,
+      45,
+      0,
+      "IMAGE"
+    ],
+    [
+      74,
+      15,
+      0,
+      45,
+      1,
+      "PARAMS"
     ]
   ],
   "groups": [],
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.751314800901578,
+      "scale": 1,
       "offset": [
-        -85.25587992022699,
-        87.67869223242162
+        -319.19998931884766,
+        105.59997940063477
       ]
     }
   },

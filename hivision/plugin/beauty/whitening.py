@@ -72,3 +72,4 @@ def make_whitening_png(image, strength):
     output_image = cv2.merge((b_w, g_w, r_w, a))
 
     return cv2.cvtColor(output_image, cv2.COLOR_RGBA2BGRA)
+

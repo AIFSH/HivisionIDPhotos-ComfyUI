@@ -1,7 +1,6 @@
 # Required Libraries
 import cv2
 import numpy as np
-#import gradio as gr
 
 
 def annotate_image(image, grind_degree, detail_degree, strength):
@@ -82,3 +81,4 @@ def process_image(input_img, grind_degree, detail_degree, strength):
     # Convert the combined image back to RGB for display
     combined_img_rgb = cv2.cvtColor(combined_img, cv2.COLOR_BGR2RGB)
     return combined_img_rgb
+

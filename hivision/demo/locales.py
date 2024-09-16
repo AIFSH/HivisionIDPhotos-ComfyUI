@@ -564,4 +564,78 @@ LOCALES = {
             "label": "미백 강도",
         },
     },
+    "brightness_strength": {
+        "en": {
+            "label": "brightness strength",
+        },
+        "zh": {
+            "label": "亮度强度",
+        },
+        "ja": {
+            "label": "明るさの強さ",
+        },
+        "ko": {
+            "label": "밝기 강도",
+        },
+    },
+    "contrast_strength": {
+        "en": {
+            "label": "contrast strength",
+        },
+        "zh": {
+            "label": "对比度强度",
+        },
+        "ja": {
+            "label": "コントラスト強度",
+        },
+        "ko": {
+            "label": "대비 강도",
+        },
+    },
+    "sharpen_strength": {
+        "en": {
+            "label": "sharpen strength",
+        },
+        "zh": {
+            "label": "锐化强度",
+        },
+        "ja": {
+            "label": "シャープ化強度",
+        },
+        "ko": {
+            "label": "샤ープ 강도",
+        },
+    },
+    "saturation_strength": {
+        "en": {
+            "label": "saturation strength",
+        },
+        "zh": {
+            "label": "饱和度强度",
+        },
+        "ja": {
+            "label": "飽和度強度",
+        },
+        "ko": {
+            "label": "포화도 강도",
+        },
+    },
+    "face_alignment": {
+        "en": {
+            "label": "Face Alignment",
+            "value": "Open",
+        },
+        "zh": {
+            "label": "人脸旋转对齐",
+            "value": "开启",
+        },
+        "ja": {
+            "label": "顔の整列",
+            "value": "開始",
+        },
+        "ko": {
+            "label": "얼굴 정렬",
+            "value": "시작",
+        },
+    },
 }
